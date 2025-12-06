@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Elder Safety Assistant</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f3f6fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            width: 90%;
+            max-width: 650px;
+            padding: 35px;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 34px;
+            margin-bottom: 25px;
+            color: #26336b;
+        }
+
+        .alert-box {
+            padding: 25px;
+            margin-top: 20px;
+            border-radius: 12px;
+            font-size: 26px;
+            line-height: 1.4;
+            min-height: 120px;
+            transition: 0.4s;
+        }
+
+        .safe {
+            background: #e7f8e9;
+            color: #0c6a12;
+            border: 2px solid #27ae60;
+        }
+
+        .warning {
+            background: #ffecec;
+            color: #c62828;
+            border: 2px solid #e53935;
+        }
+
+        .neutral {
+            background: #fff7cc;
+            color: #a17c00;
+            border: 2px solid #f5d742;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #777;
+        }
+
+        button {
+            margin-top: 25px;
+            padding: 15px 30px;
+            font-size: 22px;
+            border: none;
+            border-radius: 10px;
+            background: #3c5df0;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #1b3ed3;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <h1>Elder Safety Assistant</h1>
+
+        <div id="alert" class="alert-box neutral">
+            Checking for messages...
+        </div>
+
+        <button onclick="manualCheck()">Check Now</button>
+
+        <div class="footer">Automated scam alert protection enabled</div>
+    </div>
+
+
+    <script>
+        const BACKEND = "http://127.0.0.1:5000";
+
+        function speak(text) {
+            window.speechSynthesis.cancel();
+            let msg = new SpeechSynthesisUtterance(text);
+            msg.rate = 0.9; // slower for elders
+            window.speechSynthesis.speak(msg);
+        }
+
+        async function fetchAlert(showVoice = true) {
+            const box = document.getElementById("alert");
+
+            try {
+                const res = await fetch(BACKEND + "/alerts");
+                const data = await res.json();
+
+                if (!data.alerts || data.alerts.length === 0) {
+                    box.innerHTML = "No alerts yet.";
+                    box.className = "alert-box neutral";
+                    return;
+                }
+
+                const a = data.alerts[0];
+                let text = "";
+
+                if (a.is_scam === true) {
+                    text = a.elder_warning || "⚠️ Warning: This looks like a scam. Do not respond.";
+                    box.className = "alert-box warning";
+                } else if (a.is_scam === false) {
+                    text = "✔ This message appears safe.";
+                    box.className = "alert-box safe";
+                } else {
+                    text = "⚠️ Unable to determine message safety. Be careful.";
+                    box.className = "alert-box neutral";
+                }
+
+                box.innerHTML = text;
+
+                if (showVoice) speak(text);
+
+            } catch (err) {
+                box.innerHTML = "Unable to reach system.";
+                box.className = "alert-box neutral";
+            }
+        }
+
+        function manualCheck() {
+            fetchAlert(true);
+        }
+
+        // auto-refresh every 5 seconds
+        setInterval(() => fetchAlert(false), 5000);
+
+        // first load
+        fetchAlert(true);
+    </script>
+
+</body>
+
+</html>
