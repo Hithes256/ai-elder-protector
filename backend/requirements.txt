@@ -1,8 +1,0 @@
-Flask==2.3.2
-flask-socketio==5.3.4
-eventlet==0.33.3
-SQLAlchemy==2.0.22
-python-dotenv==1.0.0
-transformers==4.40.0
-torch>=1.13.0  # or install CPU-only torch: pip install torch --index-url https://download.pytorch.org/whl/cpu
-requests==2.31.0
