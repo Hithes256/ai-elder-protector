@@ -1,0 +1,97 @@
+AI Elder Finance Protector
+
+FULL PROJECT SETUP 
+This includes:
+1.	Backend setup (Flask + Scam Analyzer + Twilio SMS)
+2.	Twilio API setup
+3.	Frontend setup (your custom dashboard UI)
+4.	Elder-UI Alerts
+5.	Running both servers
+6.	Testing alerts
+
+STEP 1 — Create Project Folders
+Create this structure:
+ai-elder-protector/
+│
+├── backend/
+└── frontend/
+
+STEP 2 — Install Python & Create Backend
+2.1 Open CMD inside backend folder:
+cd backend
+2.2 Create virtual environment:
+python -m venv venv
+2.3 Activate virtual environment:
+venv\Scripts\activate
+2.4 Install backend libraries:
+pip install flask flask-cors requests twilio
+2.5 Create app.py inside backend
+
+STEP 3 — Create Twilio SMS API
+You must set up Twilio one time only.
+3.1 Go to Twilio
+https://www.twilio.com
+3.2 Create free account
+They give:
+•	1 free trial phone number
+•	Free trial credits
+•	Ability to send SMS to verified numbers
+3.3 Get your credentials
+Go to Console → Dashboard
+You will get:
+•	ACCOUNT SID → looks like: ACxxxxxxxxxxxxx
+•	AUTH TOKEN → looks like: aPxxxxxxxxxxxxx
+•	TWILIO PHONE NUMBER → looks like: +19804042373
+3.4 Save them as Windows Environment Variables
+OPEN CMD :
+setx TWILIO_SID "YOUR_ACCOUNT_SID"
+setx TWILIO_AUTH "YOUR_AUTH_TOKEN"
+setx TWILIO_NUMBER "+19804042373"
+3.5 Restart your CMD
+(so the variables load)
+
+STEP 4 — Run the Backend
+Open CMD:
+cd backend
+venv\Scripts\activate
+python app.py
+Correct output will show:
+Twilio configured: True
+Running on http://127.0.0.1:5000
+Backend is done ✔
+
+STEP 5 — Setup Frontend
+5.1 Go to frontend folder:
+cd frontend
+5.2 Create package.json (I provided it)
+5.3 Install dependencies:
+npm install
+5.4 Run the frontend:
+npm run dev
+It will show:
+Local: http://localhost:5173/
+Open that link.
+
+STEP 6 – Setup Elder-UI and run
+Open CMD:
+cd elder-ui
+python -m http.server 8000
+Open in browser - http://localhost:8000/index.html
+
+STEP 7— FIRST TIME USE
+When frontend opens:
+1️⃣ Signup using email + password
+2️⃣ It logs you in
+3️⃣ Build your profile (your name + phone)
+4️⃣ Add family members
+5️⃣ Go to Analyze page
+6️⃣ Paste any SCAM message
+7️⃣ Click Analyze
+
+STEP 8 — SMS Alert Works Automatically
+If AI detects scam:
+✔ Alert goes to YOUR phone
+✔ Alert goes to ALL family numbers
+✔ Alert contains scam details
+✔ Twilio sends instantly
+
