@@ -1,139 +1,446 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Elder Protector</title>
-
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: Arial, sans-serif;
-        }
-
-        .card {
-            width: 400px;
-            background: white;
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            text-align: center;
-        }
-
-        h2 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        textarea {
-            width: 100%;
-            height: 130px;
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid #888;
-            font-size: 15px;
-            resize: none;
-            outline: none;
-        }
-
-        button {
-            background: #4facfe;
-            color: white;
-            width: 100%;
-            padding: 14px;
-            border: none;
-            font-size: 16px;
-            margin-top: 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: 0.25s;
-        }
-
-        button:hover {
-            background: #00c6fb;
-        }
-
-        .output {
-            margin-top: 20px;
-            background: #f1f8ff;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 15px;
-            display: none;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Scam Guard — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{ --bg:#eaf1ff; --card:#fff; --muted:#6b7280; --accent:#2b6df6; --accent-2:#1d4ed8; --glass: rgba(255,255,255,0.85); --shadow: 0 10px 30px rgba(24,39,75,0.08); --text:#0f1724; font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial; }
+    *{box-sizing:border-box} html,body{height:100%;margin:0} body{background:linear-gradient(180deg,var(--bg),#f7fbff 60%);color:var(--text);-webkit-font-smoothing:antialiased}
+    .wrap{max-width:1150px;margin:0 auto;padding:18px} header{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+    .brand{display:flex;gap:12px;align-items:center} .shield{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#fff,#e6f0ff);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
+    nav{display:flex;gap:8px;align-items:center} .nav-btn{background:var(--glass);padding:8px 14px;border-radius:10px;border:1px solid rgba(10,20,40,0.03);display:flex;gap:8px;align-items:center;color:var(--text);font-weight:600;cursor:pointer} .nav-btn.disabled{opacity:0.45;cursor:not-allowed} .nav-btn.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;box-shadow:0 8px 24px rgba(43,109,246,0.18)}
+    .avatar-small{width:36px;height:36px;border-radius:50%;background:#f2f6fb;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent-2)}
+    .panel{background:var(--card);border-radius:14px;padding:20px;box-shadow:var(--shadow);margin-top:18px} .small-muted{color:var(--muted);font-size:13px}
+    .login-wrap{display:flex;align-items:center;justify-content:center;height:60vh} .login-card{width:100%;max-width:560px;background:linear-gradient(180deg,#f8fbff,#fff);border-radius:14px;padding:28px;box-shadow:0 18px 50px rgba(16,44,122,0.08);border:1px solid rgba(13,52,200,0.05)}
+    .field{display:flex;flex-direction:column;margin-bottom:12px} label{font-size:13px;margin-bottom:6px;color:var(--muted)} input, textarea{padding:12px;border-radius:10px;border:1px solid #e9f0ff;background:transparent;font-size:14px;color:var(--text)}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;border:0;background:#9aa3ab;color:white;font-weight:700;cursor:not-allowed} .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));cursor:pointer}
+    .form-card{margin-top:12px;border-radius:12px;padding:14px;background:linear-gradient(180deg,#fff,#fbfdff);border:1px solid rgba(10,20,40,0.03)} textarea{width:100%;min-height:140px;border-radius:12px;padding:14px;border:1px solid #e6ecf5;font-size:15px;resize:vertical}
+    .meta{display:flex;justify-content:space-between;align-items:center;margin-top:10px;color:var(--muted);font-size:13px} .result{display:none;margin-top:14px;padding:14px;border-radius:12px;background:#f6fbff;border:1px solid #e0ecff}
+    .tag{display:inline-block;padding:6px 12px;border-radius:999px;font-weight:800;color:white;font-size:13px} .tag.scam{background:#d62828} .tag.safe{background:#2a9d8f}
+    .history-item{padding:12px;border-radius:10px;background:#fff;border:1px solid #eef5ff;margin-bottom:10px} .family-card{display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:10px;background:#fff;border:1px solid #eef5ff;margin-bottom:10px}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(3,20,70,0.45);display:flex;align-items:center;justify-content:center;z-index:9999}.modal{background:var(--card);padding:18px;border-radius:12px;max-width:520px;width:100%;box-shadow:0 20px 60px rgba(10,20,80,0.2)}
+  </style>
 </head>
-
 <body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="shield" aria-hidden>
+          <svg width="22" height="24" viewBox="0 0 24 28" fill="none"><path d="M12 2l8 3v7c0 7.18-5.82 12.36-8 14-2.18-1.64-8-6.82-8-14V5l8-3z" fill="#2b6df6"/></svg>
+        </div>
+        <div><h1>Scam Guard</h1><p class="small-muted">AI-Powered Protection</p></div>
+      </div>
 
-<div class="card">
-    <h2>AI Elder Protector</h2>
-    <textarea id="userMessage" placeholder="Paste suspicious message here..."></textarea>
-    <button onclick="analyzeMessage()">Analyze Message</button>
+      <nav id="topNav">
+        <div id="navAnalyze" class="nav-btn disabled">🔍 Analyze</div>
+        <div id="navHistory" class="nav-btn disabled">⏱ History</div>
+        <div id="navFamily" class="nav-btn disabled">👪 Family</div>
+        <div id="navLearn" class="nav-btn">📘 Learn</div>
+        <div id="navSettings" class="nav-btn disabled">⚙ Settings</div>
+        <div id="navProfile" class="nav-btn disabled">👤 Profile</div>
+        <div id="navLogout" class="nav-btn" style="display:none">🚪 Logout</div>
+        <div id="userInfo" style="display:flex;align-items:center;gap:10px;margin-left:8px"><div id="displayName" class="small-muted">Not signed in</div><div id="displayAvatar" class="avatar-small">-</div></div>
+      </nav>
+    </header>
 
-    <div id="outputBox" class="output"></div>
-</div>
+    <div id="loginArea" class="login-wrap">
+      <div class="login-card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:20px;font-weight:800;color:var(--accent-2);margin-bottom:6px">Welcome to Scam Guard</div>
+            <div class="small-muted" style="margin-bottom:12px">Sign in to access the dashboard. This demo uses local sign-in only.</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="field"><label>Email</label><input id="loginEmail" type="email" placeholder="you@example.com" /></div>
+          <div class="field"><label>Password</label><input id="loginPassword" type="password" placeholder="Choose a password" /></div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+            <button id="loginBtn" class="btn primary">Sign in</button>
+            <button id="demoBtn" class="btn">Demo (auto)</button>
+            <div id="loginFeedback" class="small-muted" style="margin-left:8px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="dashboardArea" style="display:none">
+      <section id="panelAnalyze" class="panel" style="display:none">
+        <h2>Check Message for Scams</h2>
+        <div class="small-muted">Paste any suspicious message and click Analyze. AI backend will analyze it.</div>
+        <div class="form-card">
+          <label for="message">Paste message</label>
+          <textarea id="message" maxlength="10000" placeholder="Paste SMS, WhatsApp, email message..."></textarea>
+          <div class="meta">
+            <div id="count">0 / 10,000 characters</div>
+            <div><button id="analyzeBtn" class="btn" disabled>🛡 Check for Scams</button></div>
+          </div>
+          <div id="analysisResult" class="result"></div>
+        </div>
+      </section>
+
+      <section id="panelHistory" class="panel" style="display:none">
+        <h2>Analysis History</h2>
+        <div class="small-muted">Your previous analyses (stored locally per user).</div>
+        <div id="historyContainer" style="margin-top:12px"></div>
+        <div id="historyEmpty" class="small-muted" style="display:none;margin-top:8px">No history yet.</div>
+      </section>
+
+      <section id="panelFamily" class="panel" style="display:none">
+        <h2>Family</h2>
+        <div class="small-muted">Add family members (name, relation, phone). Stored only in your browser.</div>
+        <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+          <button id="btnAddFamily" class="btn primary">+ Add Member</button>
+          <button id="btnImport" class="btn">Import sample</button>
+        </div>
+        <div id="familyContainer" style="margin-top:14px"></div>
+        <div id="familyEmpty" class="small-muted" style="display:none;margin-top:8px">No family members. Click "Add Member".</div>
+      </section>
+
+      <section id="panelLearn" class="panel" style="display:none">
+        <h2>How Scams Work</h2>
+        <div class="small-muted">Simple guide to common scams and what to do.</div>
+        <div style="margin-top:12px">
+          <h3>Common signs</h3>
+          <ul>
+            <li><b>Urgency:</b> "Act now" or "Your account will be closed".</li>
+            <li><b>Requests for codes:</b> Never share OTPs or passwords.</li>
+            <li><b>Unknown links:</b> Do not click links from unknown senders.</li>
+            <li><b>Money requests:</b> Scammers ask for payment / transfers.</li>
+          </ul>
+          <h3>What to do</h3>
+          <ol>
+            <li>Don't click links.</li>
+            <li>Don't share OTP/passwords.</li>
+            <li>Verify by calling known numbers.</li>
+            <li>Ask family to review the message.</li>
+          </ol>
+        </div>
+      </section>
+
+      <section id="panelSettings" class="panel" style="display:none">
+        <h2>Settings</h2>
+        <div class="small-muted">Personalize the app (saved locally).</div>
+        <div style="margin-top:12px">
+          <div class="field"><label>Dark mode</label><button id="toggleTheme" class="btn">Toggle Theme</button><span id="themeState" class="small-muted" style="margin-left:8px"></span></div>
+          <div class="field"><label>Voice alerts</label><button id="toggleVoice" class="btn">Toggle Voice</button><span id="voiceState" class="small-muted" style="margin-left:8px"></span></div>
+          <div class="field"><label>Clear local profile & family</label><button id="clearLocal" class="danger-btn">Clear Local Data</button></div>
+        </div>
+      </section>
+
+      <section id="panelProfile" class="panel" style="display:none">
+        <h2>Profile</h2>
+        <div class="small-muted">Your info is used for message sender field and SMS alerts. Saved locally per user.</div>
+        <div style="margin-top:12px;max-width:520px">
+          <div class="field"><label>Full name</label><input id="profileName" type="text" placeholder="Your full name" /></div>
+          <div class="field"><label>Phone (include country code or local 10-digit e.g. 919876543210 or 9876543210)</label><input id="profilePhone" type="tel" placeholder="+919876543210" /></div>
+          <div class="field"><label>Relation (optional)</label><input id="profileRelation" type="text" placeholder="Self, Mom, Dad" /></div>
+          <div style="display:flex;gap:8px;align-items:center"><button id="saveProfile" class="btn primary">Save Profile</button><div id="profileMsg" class="small-muted" style="margin-left:8px"></div></div>
+        </div>
+      </section>
+    </div>
+
+    <div id="modalRoot" style="display:none"></div>
+  </div>
 
 <script>
-    // ----------------------------------------------
-    //     BACKEND URL (FULLY FIXED)
-    // ----------------------------------------------
-    const BACKEND_URL = "https://ai-elder-protector-1.onrender.com";
+/* CONFIG */
+/* Use your Render backend here */
+const BACKEND_URL = "https://ai-elder-protector-1.onrender.com";
 
-    const API_ANALYZE = `${BACKEND_URL}/analyze-message`;
-    const API_TEST = `${BACKEND_URL}/test-message`;
+/* Endpoints used by frontend */
+const BACKEND_TEST = BACKEND_URL + "/test-message";
+const BACKEND_SEND_FAMILY = BACKEND_URL + "/send-family-alert";
+/* backend doesn't expose /analyze-message in your Flask; reuse test-message which performs analysis */
+const BACKEND_ANALYZE = BACKEND_TEST;
 
+const KEY_SESSION = "sg_session_final";
+function keyUser(base){
+  const session = JSON.parse(localStorage.getItem(KEY_SESSION) || "null");
+  const emailSafe = session && session.email ? session.email.replace(/[^a-z0-9@._-]/gi,'') : "anon";
+  return base + "__" + emailSafe;
+}
+const KEY_PROFILE="sg_profile", KEY_FAMILY="sg_family", KEY_HISTORY="sg_history", KEY_SETTINGS="sg_settings";
 
-    // ----------------------------------------------
-    //     CHECK BACKEND CONNECTION
-    // ----------------------------------------------
-    fetch(API_TEST)
-        .then(res => res.json())
-        .then(data => console.log("Backend OK:", data))
-        .catch(err => console.error("Cannot reach backend:", err));
+/* STATE */
+let session = JSON.parse(localStorage.getItem(KEY_SESSION) || "null");
+let profile = JSON.parse(localStorage.getItem(keyUser(KEY_PROFILE)) || "null") || { name:"", phone:"", relation:"" };
+let family = JSON.parse(localStorage.getItem(keyUser(KEY_FAMILY)) || "null") || [];
+let historyData = JSON.parse(localStorage.getItem(keyUser(KEY_HISTORY)) || "null") || [];
+let settings = JSON.parse(localStorage.getItem(keyUser(KEY_SETTINGS)) || "null") || { dark:false, voice:true };
 
+/* DOM */
+const loginArea=document.getElementById('loginArea'), dashboardArea=document.getElementById('dashboardArea');
+const loginEmail=document.getElementById('loginEmail'), loginPassword=document.getElementById('loginPassword'), loginBtn=document.getElementById('loginBtn'), demoBtn=document.getElementById('demoBtn'), loginFeedback=document.getElementById('loginFeedback');
+const topNav={ analyze:document.getElementById('navAnalyze'), history:document.getElementById('navHistory'), family:document.getElementById('navFamily'), learn:document.getElementById('navLearn'), settings:document.getElementById('navSettings'), profile:document.getElementById('navProfile'), logout:document.getElementById('navLogout') };
+const displayName=document.getElementById('displayName'), displayAvatar=document.getElementById('displayAvatar');
+const panelAnalyze=document.getElementById('panelAnalyze'), panelHistory=document.getElementById('panelHistory'), panelFamily=document.getElementById('panelFamily'), panelLearn=document.getElementById('panelLearn'), panelSettings=document.getElementById('panelSettings'), panelProfile=document.getElementById('panelProfile');
+const messageEl=document.getElementById('message'), countEl=document.getElementById('count'), analyzeBtn=document.getElementById('analyzeBtn'), analysisResult=document.getElementById('analysisResult');
+const historyContainer=document.getElementById('historyContainer'), historyEmpty=document.getElementById('historyEmpty');
+const familyContainer=document.getElementById('familyContainer'), familyEmpty=document.getElementById('familyEmpty'), btnAddFamily=document.getElementById('btnAddFamily'), btnImport=document.getElementById('btnImport');
+const toggleTheme=document.getElementById('toggleTheme'), themeState=document.getElementById('themeState'), toggleVoice=document.getElementById('toggleVoice'), voiceState=document.getElementById('voiceState'), clearLocal=document.getElementById('clearLocal');
+const profileName=document.getElementById('profileName'), profilePhone=document.getElementById('profilePhone'), profileRelation=document.getElementById('profileRelation'), saveProfileBtn=document.getElementById('saveProfile'), profileMsg=document.getElementById('profileMsg');
+const modalRoot=document.getElementById('modalRoot');
 
+/* UTILS */
+function saveSession(){ localStorage.setItem(KEY_SESSION, JSON.stringify(session)); }
+function saveProfileLocal(){ localStorage.setItem(keyUser(KEY_PROFILE), JSON.stringify(profile)); }
+function saveFamilyLocal(){ localStorage.setItem(keyUser(KEY_FAMILY), JSON.stringify(family)); }
+function saveHistoryLocal(){ localStorage.setItem(keyUser(KEY_HISTORY), JSON.stringify(historyData)); }
+function saveSettingsLocal(){ localStorage.setItem(keyUser(KEY_SETTINGS), JSON.stringify(settings)); }
+function genId(){ return 'id_'+Math.random().toString(36).slice(2,9); }
+function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&"'<>]/g,m=>({'&':'&amp;','"':'&quot;',"'":"&#39;",'<':'&lt;','>':'&gt;'}[m])); }
+function applySettings(){ document.documentElement.setAttribute('data-theme', settings.dark? 'dark':'light'); themeState.textContent = settings.dark? 'Dark':'Light'; voiceState.textContent = settings.voice? 'On':'Off'; }
+applySettings();
 
-    // ----------------------------------------------
-    //     ANALYZE MESSAGE FUNCTION
-    // ----------------------------------------------
-    function analyzeMessage() {
-        const msg = document.getElementById("userMessage").value.trim();
-        const outputBox = document.getElementById("outputBox");
+/* HEADER */
+function refreshHeader(){
+  if(session && session.email){
+    displayName.textContent = profile.name || session.email;
+    displayAvatar.textContent = (profile.name || session.email).charAt(0).toUpperCase();
+    topNav.logout.style.display = 'inline-flex';
+    const enabled = !!(profile && profile.name);
+    ['analyze','history','family','settings','profile'].forEach(k=> {
+      if(enabled) topNav[k].classList.remove('disabled'); else topNav[k].classList.add('disabled');
+    });
+  } else {
+    displayName.textContent = 'Not signed in'; displayAvatar.textContent='-'; topNav.logout.style.display='none';
+    ['analyze','history','family','settings','profile'].forEach(k=> topNav[k].classList.add('disabled'));
+  }
+  topNav.learn.classList.remove('disabled');
+}
+refreshHeader();
 
-        if (msg.length === 0) {
-            outputBox.style.display = "block";
-            outputBox.innerHTML = "⚠️ Please enter a message.";
-            return;
-        }
+/* NAV helpers */
+function hidePanels(){ [panelAnalyze,panelHistory,panelFamily,panelLearn,panelSettings,panelProfile].forEach(p=>p.style.display='none'); Object.values(topNav).forEach(n=>n.classList.remove('active')); }
+function showPanel(key){
+  // require login and profile for protected pages (except learn)
+  if((key!=='learn') && (!session || !profile.name)){
+    if(!session){ showLogin("Please sign in."); return; }
+    // if logged in but profile missing -> show profile panel
+    hidePanels();
+    panelProfile.style.display='block';
+    topNav.profile.classList.add('active');
+    return;
+  }
+  hidePanels();
+  if(!session && key!=='learn'){ showLogin("Please sign in."); return; }
+  switch(key){
+    case 'analyze': panelAnalyze.style.display='block'; topNav.analyze.classList.add('active'); break;
+    case 'history': panelHistory.style.display='block'; topNav.history.classList.add('active'); loadHistory(); break;
+    case 'family': panelFamily.style.display='block'; topNav.family.classList.add('active'); renderFamily(); break;
+    case 'learn': panelLearn.style.display='block'; topNav.learn.classList.add('active'); break;
+    case 'settings': panelSettings.style.display='block'; topNav.settings.classList.add('active'); break;
+    case 'profile': panelProfile.style.display='block'; topNav.profile.classList.add('active'); loadProfileToUI(); break;
+    default: panelAnalyze.style.display='block'; topNav.analyze.classList.add('active');
+  }
+}
 
-        outputBox.style.display = "block";
-        outputBox.innerHTML = "⏳ Analyzing… please wait…";
+/* LOGIN */
+loginBtn.addEventListener('click', async ()=>{
+  const email=(loginEmail.value||'').trim().toLowerCase(); const pass=(loginPassword.value||'').trim();
+  loginFeedback.textContent='';
+  if(!email||!pass){ loginFeedback.textContent='Enter email and password.'; return; }
+  // For this demo we keep local session, and attempt to initialize user via /login (if backend supports it)
+  try{
+    const res = await fetch(BACKEND_URL + "/login", { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email }) });
+    const data = await res.json().catch(()=>({ success:true }));
+    if(data && data.success===false){ loginFeedback.textContent='Login failed'; return; }
+  }catch(e){
+    // ignore network error for /login if backend doesn't have it; continue with local session
+  }
+  session = { email };
+  saveSession();
+  // load per-user local values if present
+  profile = JSON.parse(localStorage.getItem(keyUser(KEY_PROFILE)) || "null") || { name: email.split('@')[0], phone:'', relation:'' };
+  family = JSON.parse(localStorage.getItem(keyUser(KEY_FAMILY)) || "null") || [];
+  historyData = JSON.parse(localStorage.getItem(keyUser(KEY_HISTORY)) || "null") || [];
+  settings = JSON.parse(localStorage.getItem(keyUser(KEY_SETTINGS)) || "null") || settings;
+  saveProfileLocal(); saveFamilyLocal(); saveHistoryLocal(); saveSettingsLocal();
+  loginFeedback.textContent = 'Signed in.';
+  refreshHeader(); applySettings();
+  // show dashboard and force profile if empty
+  showDashboard();
+  if(!profile.name || profile.name.trim()==='') showPanel('profile'); else showPanel('analyze');
+});
+demoBtn.addEventListener('click', ()=>{ loginEmail.value='demo@example.com'; loginPassword.value='demo123'; loginBtn.click(); });
+topNav.logout.addEventListener('click', ()=>{ if(confirm('Sign out?')){ session=null; localStorage.removeItem(KEY_SESSION); refreshHeader(); showLogin('Signed out.'); }});
 
-        fetch(API_ANALYZE, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: msg })
-        })
-        .then(res => res.json())
-        .then(data => {
-            outputBox.innerHTML = `
-                <strong>Result:</strong> ${data.is_scam ? "🚨 SCAM DETECTED" : "✅ Safe Message"}<br><br>
-                <strong>Explanation:</strong> ${data.explanation}
-            `;
-        })
-        .catch(err => {
-            console.error(err);
-            outputBox.innerHTML = "❌ Error reaching backend.";
-        });
+function showLogin(msg){ loginArea.style.display='flex'; dashboardArea.style.display='none'; loginFeedback.textContent = msg || ''; hidePanels(); }
+function showDashboard(){ loginArea.style.display='none'; dashboardArea.style.display='block'; }
+
+/* PROFILE */
+function loadProfileToUI(){ profileName.value = profile.name || ''; profilePhone.value = profile.phone || ''; profileRelation.value = profile.relation || ''; profileMsg.textContent=''; }
+saveProfileBtn.addEventListener('click', async ()=>{
+  const nm=(profileName.value||'').trim(); if(!nm){ profileMsg.textContent='Please enter a name.'; return; }
+  profile.name = nm; profile.phone = (profilePhone.value||'').trim(); profile.relation = (profileRelation.value||'').trim();
+  saveProfileLocal();
+  // attempt to persist on backend if endpoint exists
+  try{ await fetch(BACKEND_URL + "/save-profile", { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: session.email, profile }) }); }catch(e){}
+  profileMsg.textContent='Saved locally.';
+  refreshHeader();
+  showPanel('analyze');
+});
+
+/* ANALYZE */
+messageEl.addEventListener('input', ()=>{
+  const len=messageEl.value.length;
+  countEl.textContent = `${len} / 10,000 characters`;
+  if(len>0){ analyzeBtn.disabled=false; analyzeBtn.classList.add('primary'); }
+  else { analyzeBtn.disabled=true; analyzeBtn.classList.remove('primary'); }
+});
+
+async function notifyFamilyIfScam(alertObj){
+  try{
+    if(!alertObj) return;
+    const phones = [];
+    if(profile && profile.phone && profile.phone.trim()) phones.push(profile.phone.trim());
+    if(Array.isArray(family)) family.forEach(m=>{ if(m.phone && m.phone.trim()) phones.push(m.phone.trim()); });
+    const unique = [...new Set(phones)];
+    if(unique.length===0) return;
+    // call backend send-family-alert
+    const messageText = `⚠ Scam detected for ${alertObj.sender}: ${alertObj.elder_warning}`;
+    await fetch(BACKEND_SEND_FAMILY, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ phones: unique, message: messageText, details: alertObj })
+    });
+    console.log('Sent family/user alerts to:', unique);
+  }catch(e){ console.warn('notifyFamilyIfScam', e); }
+}
+
+analyzeBtn.addEventListener('click', async ()=>{
+  const text = messageEl.value.trim(); if(!text) return;
+  analyzeBtn.disabled=true; analyzeBtn.textContent='Analyzing...'; analysisResult.style.display='none';
+  try{
+    const payload = { email: session && session.email ? session.email : "anonymous", sender: profile.name || (session && session.email) || "User", message: text };
+    const res = await fetch(BACKEND_TEST, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(payload) });
+    if(!res.ok){
+      // show response text if available
+      const txt = await res.text().catch(()=>"");
+      throw new Error(`Backend error: ${res.status} ${txt}`);
     }
-</script>
+    const data = await res.json();
+    const a = data.alert || data;
+    const cls = a.is_scam === true ? 'scam' : a.is_scam === false ? 'safe' : 'unknown';
+    const label = a.is_scam === true ? '⚠ SCAM DETECTED' : a.is_scam === false ? '✔ SAFE' : 'UNKNOWN';
+    analysisResult.style.display = 'block';
+    analysisResult.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="tag ${cls}">${label}</div>
+          <div style="font-weight:700">${escapeHtml(a.sender || profile.name || (session && session.email) || 'You')}</div>
+        </div>
+        <div style="color:var(--muted);font-size:13px">${new Date(a.created_at || Date.now()).toLocaleString()}</div>
+      </div>
+      <div style="margin-top:10px">${escapeHtml(a.elder_warning || a.explanation || '')}</div>
+      <div style="margin-top:8px;color:var(--muted);font-size:13px">AI: ${escapeHtml(a.explanation || '')}</div>
+    `;
+    const histItem = { id: a.id || genId(), sender: a.sender || profile.name || (session && session.email) || 'You', message: text, is_scam: a.is_scam, elder_warning: a.elder_warning, explanation: a.explanation, created_at: a.created_at || new Date().toISOString() };
+    historyData.unshift(histItem); saveHistoryLocal();
+    if(a.is_scam === true) {
+      notifyFamilyIfScam(histItem);
+      // try save family server-side if endpoint exists
+      try{ await fetch(BACKEND_URL + "/save-family", { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: session.email, family }) }); }catch(e){}
+    }
+    if(panelHistory.style.display !== 'none') loadHistory();
+  }catch(err){
+    console.error(err);
+    analysisResult.style.display='block';
+    analysisResult.innerHTML = `<div style="color:#b22222">Cannot reach backend: ${escapeHtml(err.message || String(err))}</div>`;
+  } finally {
+    analyzeBtn.disabled=false; analyzeBtn.textContent='🛡 Check for Scams';
+  }
+});
 
+/* HISTORY */
+function loadHistory(){ historyContainer.innerHTML=''; historyEmpty.style.display='none'; if(!historyData || historyData.length===0){ historyEmpty.style.display='block'; return; } historyData.forEach(it=>{ const div=document.createElement('div'); div.className='history-item'; div.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="font-weight:700">${escapeHtml(it.sender||'You')}</div>
+      <div style="font-size:13px;color:var(--muted)">${new Date(it.created_at).toLocaleString()}</div>
+    </div>
+    <div style="margin-top:8px">${escapeHtml(it.message)}</div>
+    <div style="margin-top:8px"><span class="tag ${it.is_scam ? 'scam':'safe'}">${it.is_scam ? 'SCAM':'SAFE'}</span></div>
+  `; historyContainer.appendChild(div); }); }
+
+/* FAMILY */
+function renderFamily(){ familyContainer.innerHTML=''; if(!family || family.length===0){ familyEmpty.style.display='block'; return; } familyEmpty.style.display='none'; family.forEach(mem=>{ const el=document.createElement('div'); el.className='family-card'; el.innerHTML = `
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="avatar">${escapeHtml((mem.name||'U').slice(0,1).toUpperCase())}</div>
+      <div>
+        <div style="font-weight:700">${escapeHtml(mem.name)}</div>
+        <div class="small-muted">${escapeHtml(mem.relation)} ${mem.phone ? '• '+escapeHtml(mem.phone):''}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="small-btn" data-action="edit" data-id="${mem.id}">Edit</button>
+      <button class="danger-btn" data-action="delete" data-id="${mem.id}">Delete</button>
+    </div>
+  `; familyContainer.appendChild(el); }); 
+  familyContainer.querySelectorAll('[data-action="edit"]').forEach(b=> b.addEventListener('click', e=> openFamilyModal('edit', e.target.dataset.id)));
+  familyContainer.querySelectorAll('[data-action="delete"]').forEach(b=> b.addEventListener('click', e=>{ const id=e.target.dataset.id; if(confirm('Delete member?')){ family = family.filter(x=>x.id!==id); saveFamilyLocal(); renderFamily(); } }));
+}
+
+btnAddFamily.addEventListener('click', ()=> openFamilyModal('add'));
+btnImport.addEventListener('click', ()=>{ if(confirm('Import sample members?')){ family.push({ id:genId(), name:'Mom', relation:'Mother', phone:'' }); family.push({ id:genId(), name:'Dad', relation:'Father', phone:'' }); saveFamilyLocal(); renderFamily(); } });
+
+function openFamilyModal(mode,id){
+  const isEdit = mode==='edit';
+  const member = isEdit ? (family.find(m=>m.id===id) || {name:'',relation:'',phone:''}) : {name:'',relation:'',phone:''};
+  modalRoot.style.display='block';
+  modalRoot.innerHTML = `
+    <div class="modal-backdrop">
+      <div class="modal">
+        <h3 style="margin:0">${isEdit ? 'Edit member':'Add family member'}</h3>
+        <div style="margin-top:12px">
+          <div class="field"><label>Full name</label><input id="fm_name" type="text" value="${escapeHtml(member.name||'')}" /></div>
+          <div class="field"><label>Relation</label><input id="fm_relation" type="text" value="${escapeHtml(member.relation||'')}" /></div>
+          <div class="field"><label>Phone (optional)</label><input id="fm_phone" type="tel" value="${escapeHtml(member.phone||'')}" /></div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+            <button id="fm_cancel" class="btn">Cancel</button>
+            <button id="fm_save" class="btn primary">${isEdit ? 'Save':'Add'}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('fm_cancel').addEventListener('click', closeModal);
+  document.getElementById('fm_save').addEventListener('click', ()=>{
+    const name = document.getElementById('fm_name').value.trim();
+    const rel = document.getElementById('fm_relation').value.trim();
+    const phone = document.getElementById('fm_phone').value.trim();
+    if(!name || !rel){ alert('Please enter name and relation.'); return; }
+    if(isEdit){ family = family.map(x=> x.id===id ? {...x, name, relation:rel, phone} : x); } else { family.push({ id:genId(), name, relation:rel, phone }); }
+    saveFamilyLocal(); closeModal(); renderFamily();
+  });
+}
+function closeModal(){ modalRoot.style.display='none'; modalRoot.innerHTML=''; }
+
+/* SETTINGS */
+toggleTheme.addEventListener('click', ()=>{ settings.dark=!settings.dark; saveSettingsLocal(); applySettings(); });
+toggleVoice.addEventListener('click', ()=>{ settings.voice=!settings.voice; saveSettingsLocal(); applySettings(); });
+clearLocal.addEventListener('click', ()=>{ if(confirm('Clear profile and family data for this user?')){ profile={name:'',phone:'',relation:''}; family=[]; historyData=[]; saveProfileLocal(); saveFamilyLocal(); saveHistoryLocal(); renderFamily(); loadProfileToUI(); alert('Cleared local profile, family, history.'); refreshHeader(); } });
+
+/* NAV */
+topNav.analyze.addEventListener('click', ()=> showPanel('analyze')); topNav.history.addEventListener('click', ()=> showPanel('history')); topNav.family.addEventListener('click', ()=> showPanel('family')); topNav.learn.addEventListener('click', ()=> showPanel('learn')); topNav.settings.addEventListener('click', ()=> showPanel('settings')); topNav.profile.addEventListener('click', ()=> showPanel('profile'));
+
+/* STARTUP */
+(function startup(){
+  if(session && session.email){
+    profile = JSON.parse(localStorage.getItem(keyUser(KEY_PROFILE)) || "null") || profile;
+    family = JSON.parse(localStorage.getItem(keyUser(KEY_FAMILY)) || "null") || family;
+    historyData = JSON.parse(localStorage.getItem(keyUser(KEY_HISTORY)) || "null") || historyData;
+    settings = JSON.parse(localStorage.getItem(keyUser(KEY_SETTINGS)) || "null") || settings;
+    applySettings(); refreshHeader(); showDashboard();
+    if(!profile.name) showPanel('profile'); else showPanel('analyze');
+  } else { showLogin(); }
+  loginPassword.addEventListener('keypress', (e)=> { if(e.key==='Enter') loginBtn.click(); });
+})();
+
+/* DEBUG */
+window.sg={ session, profile, family, historyData, settings, saveProfileLocal, saveFamilyLocal, saveHistoryLocal, saveSettingsLocal };
+</script>
 </body>
 </html>
