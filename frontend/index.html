@@ -147,8 +147,12 @@
 
 <script>
 /* CONFIG */
-const BACKEND_TEST = `${import.meta.env.VITE_BACKEND_URL}/test-message`;
-const BACKEND_SEND_FAMILY = `${import.meta.env.VITE_BACKEND_URL}/send-family-alert`;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
+export const BACKEND_TEST = `${BACKEND_URL}/test-message`;
+export const BACKEND_SEND_FAMILY = `${BACKEND_URL}/send-family-alert`;
+export const BACKEND_ANALYZE = `${BACKEND_URL}/analyze-message`;
+
 const KEY_SESSION = "sg_session_final";
 function keyUser(base){
   const session = JSON.parse(localStorage.getItem(KEY_SESSION) || "null");
@@ -426,4 +430,5 @@ window.sg={ session, profile, family, historyData, settings, saveProfileLocal, s
 </script>
 </body>
 </html>
+
 
